@@ -1,0 +1,22 @@
+# Ignore Node and Python environments
+node_modules/
+frontend/node_modules/
+backend/env/
+backend/venv/
+backend/.venv/
+
+# Ignore Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore environment variables
+.env
+
+# Ignore zip backups
+*.zip
+
+# Ignore large data files or models if necessary
+# backend/*.csv
+# backend/*.joblib

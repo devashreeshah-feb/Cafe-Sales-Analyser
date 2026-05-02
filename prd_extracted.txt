@@ -1,0 +1,422 @@
+CAFE SALES ANALYTICS PLATFORM
+Product Requirements Document & ML Model Specification
+Version 1.0  |  April 2026  |  Confidential
+1. Executive Summary
+This document defines the Product Requirements and Machine Learning Model Specification for the Café Sales Analytics Platform — a full-stack intelligence system built to transform raw point-of-sale transaction data into actionable business insights for café operators.
+The platform ingests cleaned transaction data (10,000 records, Jan–Dec 2023), applies a Random Forest regression model, and surfaces insights through a React-based dashboard covering revenue trends, profitability analysis, data quality audits, and forecasting.
+Metric
+Value
+Total transactions analysed
+10,000
+Total revenue (2023)
+£86,606
+Estimated gross profit
+£40,459 (~46.7% blended margin)
+Average transaction value
+£8.66
+ML model R² score
+1.00 (Random Forest)
+Data quality issue (unclassified)
+9.6% of revenue — £8,271
+2. Problem Statement
+2.1 Business Context
+Café operators generate large volumes of transaction data through point-of-sale systems, but lack the tooling to derive meaningful revenue intelligence from it. Manual Excel analysis is slow, error-prone, and produces static snapshots rather than living insights.
+2.2 Key Pain Points
+No visibility into which menu items are most profitable (not just highest revenue)
+Missing and erroneous transaction data (items, locations, payment methods) creating blind spots
+No forecasting capability to anticipate demand by product, day, or channel
+Inability to compare in-store vs takeaway channel performance
+No data-driven basis for menu pricing or promotional decisions
+3. Goals & Success Metrics
+3.1 Business Goals
+Increase gross profit margin by 5–10% within 6 months of deployment through data-driven menu decisions
+Reduce unclassified/error transaction rate from 9.6% to below 2% within 90 days
+Enable management to make weekly menu and pricing decisions backed by data
+Identify and act on revenue improvement opportunities worth at least £15,000 annually
+3.2 Success Metrics
+KPI
+Baseline
+Target
+Timeframe
+Gross profit margin
+46.7%
+52%+
+6 months
+Data completeness rate
+90.3%
+98%+
+90 days
+Avg transaction value
+£8.66
+£10.00+
+6 months
+Coffee/Tea % of revenue
+14%
+22%+
+6 months
+Dashboard daily active users
+0
+5+
+30 days
+Forecast accuracy (MAE)
+—
+< £200/month
+On launch
+4. Product Overview
+4.1 System Architecture
+The platform is composed of three layers:
+Data Layer: Cleaned CSV ingestion pipeline with automated quality checks and imputation
+ML Backend: Python (FastAPI) serving a Random Forest regression model for revenue prediction and an anomaly detector for data quality flagging
+Frontend: React + TypeScript dashboard with Chart.js visualisations, filterable by date, item, location, and payment method
+4.2 Tech Stack
+Layer
+Technology
+Rationale
+Frontend
+React 18, TypeScript, Chart.js
+Component reuse, type safety, rich charts
+State management
+Zustand
+Lightweight, minimal boilerplate
+Backend API
+Python 3.11, FastAPI
+High performance, auto-docs, async-ready
+ML framework
+scikit-learn (Random Forest)
+Best fit for tabular data; R²=1.00 on dataset
+Data processing
+Pandas, NumPy
+Industry standard, fast transformations
+Database
+PostgreSQL
+Relational, supports complex queries
+Deployment
+Docker + Nginx
+Containerised, portable
+CI/CD
+GitHub Actions
+Automated testing and deployment
+5. Feature Requirements
+5.1 Dashboard — Revenue Overview
+Priority: P0 (Must Have)
+Monthly revenue bar chart for full year with £ values and YoY comparison placeholder
+KPI cards: Total Revenue, Gross Profit, Avg Transaction Value, Data Quality Score
+Revenue by item with horizontal bars and absolute £ values
+Daily and weekly revenue trend lines
+Interactive date range filter (1W, 1M, 3M, 6M, 1Y, custom)
+5.2 Profitability Analysis
+Priority: P0 (Must Have)
+Item-level profitability matrix: Revenue, Estimated Profit, Margin %, Rank (S/A/B)
+Margin comparison chart (Coffee/Tea highest at 70%, Sandwich lowest at 40%)
+Profit opportunity calculator: shows potential uplift from upselling high-margin items
+Loss identification: items or periods with below-average margins flagged in red
+5.3 Channel & Payment Analysis
+Priority: P1 (Should Have)
+In-store vs Takeaway revenue split (currently 50.5% vs 49.5% of known revenue)
+Payment method distribution doughnut chart (Digital Wallet / Credit Card / Cash)
+Cross-tab: channel x payment method heatmap
+Time-of-day analysis by channel (requires POS system enhancement)
+5.4 Data Quality Dashboard
+Priority: P0 (Must Have)
+Field-level completeness audit table (Item: 9.7% missing, Payment: 31.8%, Location: 39.6%, Date: 4.6%)
+Revenue at risk metric: £ value attributed to incomplete records
+Anomaly feed: transactions flagged with ERROR or UNKNOWN values
+Trend line showing data quality improvement over time
+5.5 ML-Powered Forecasting
+Priority: P1 (Should Have)
+Next 30/60/90 day revenue forecast using trained Random Forest model
+Confidence intervals shown as shaded bands on forecast chart
+What-if simulator: adjust item mix, prices, or volumes and see projected impact
+Seasonal pattern detection and annotation
+5.6 Recommendations Engine
+Priority: P2 (Nice to Have)
+Auto-generated textual recommendations ranked by revenue impact
+Menu optimisation suggestions (e.g. retire low-margin, low-volume items)
+Upsell opportunity alerts based on transaction patterns
+6. Key Data Analysis Findings
+6.1 Revenue Breakdown by Item
+Item
+Revenue
+Est. Profit
+Margin
+Transactions
+Rank
+Salad
+£16,423
+£7,391
+45%
+1,148
+A — High Rev
+Sandwich
+£13,043
+£5,217
+40%
+1,131
+B — Low Margin
+Smoothie
+£12,860
+£7,073
+55%
+1,096
+A — Profitable
+Juice
+£10,251
+£5,126
+50%
+1,171
+B — Mid Tier
+Cake
+£10,117
+£5,059
+50%
+1,139
+B — Mid Tier
+Coffee
+£7,007
+£4,905
+70%
+1,165
+S — Best Margin
+Tea
+£5,109
+£3,577
+70%
+1,089
+S — Best Margin
+Cookie
+£3,523
+£2,114
+60%
+1,092
+B — Low Vol
+6.2 Critical Insights
+Coffee and Tea have 70% margins but represent only 14% of total revenue — the single biggest profit improvement opportunity.
+Salad is the top revenue item (£16,423) but carries only 45% margin. Supply cost renegotiation could add ~£800 profit annually per 1% margin gain.
+Sandwich volume is strong (#2 by transactions) but 40% margin is the weakest. Premium variants (gourmet fillings, add-ons) could raise average ticket and margin.
+Smoothies earn 55% margin with £12,860 revenue — an under-promoted star performer. Bundle deals and loyalty incentives would be high-ROI.
+9.6% of revenue (£8,271) comes from transactions where the item is UNKNOWN or ERROR — a POS data entry problem that is masking true item-level performance.
+39.6% of transactions are missing location data — the in-store vs takeaway split analysis is based on only 60% of data, making channel strategy decisions unreliable.
+7. ML Model Specification
+7.1 Model Selection Rationale
+After evaluating multiple algorithms, Random Forest Regressor was selected as the primary model for the following reasons:
+Model
+MAE
+R²
+Training Speed
+Interpretability
+Selected
+Random Forest
+~0.00
+1.00
+Fast
+Medium (SHAP)
+YES
+Gradient Boosting
+~0.00
+1.00
+Medium
+Medium
+Backup
+Linear Regression
+~0.50
+~0.95
+Very Fast
+High
+Baseline
+Neural Network
+~0.02
+~0.99
+Slow
+Low
+No
+Note: The R²=1.00 result indicates that total_spent = quantity × price_per_unit is a deterministic formula within this dataset. This is by design — the model confirms data integrity and is used for anomaly detection (flagging records where total_spent deviates from expected).
+7.2 Feature Engineering
+Feature
+Type
+Importance
+Description
+quantity
+Numeric
+54.7%
+Units purchased per transaction
+price_per_unit
+Numeric
+45.3%
+Item unit price in GBP
+item_encoded
+Categorical (label)
+~0%
+Encoded item category
+location_encoded
+Categorical (label)
+~0%
+In-store / Takeaway
+payment_encoded
+Categorical (label)
+~0%
+Cash / Card / Wallet
+month
+Numeric
+~0%
+Transaction month (1–12)
+day_of_week
+Numeric
+~0%
+Transaction weekday (0=Mon)
+7.3 Model Parameters
+Algorithm: RandomForestRegressor (scikit-learn)
+n_estimators: 100 trees
+max_depth: None (fully grown trees)
+min_samples_split: 2
+random_state: 42
+Train/test split: 80% / 20% (stratified by month)
+7.4 Model Outputs
+Primary: Predicted total_spent per transaction
+Secondary: Anomaly score (|actual - predicted| > 2 sigma flagged as data error)
+Tertiary: Feature importance rankings for dashboard explainability
+7.5 Retraining Strategy
+Automated monthly retraining as new transaction data accumulates
+Model drift monitoring: retrain if MAE exceeds £0.50 on validation set
+A/B model versioning: new model must outperform current by >5% MAE to deploy
+8. Revenue Improvement Recommendations
+8.1 Quick Wins (0–30 Days)
+Action
+Est. Revenue Impact
+Effort
+Priority
+Fix POS item classification (eliminate UNKNOWN/ERROR)
++£8,271 attribution clarity
+Low
+P0
+Add 'add shot / milk upgrade' prompt for Coffee orders
++£3,500–5,000 pa
+Low
+P0
+Promote Smoothies with combo deal (Smoothie + Cookie)
++£2,000–4,000 pa
+Low
+P1
+Fix location field in POS for all transactions
+Enables channel strategy
+Low
+P0
+8.2 Medium Term (1–3 Months)
+Introduce premium sandwich variants: add 2–3 gourmet options at £6–8 vs standard £4, targeting 20% of sandwich buyers to trade up. Projected impact: +£2,600–5,200 pa.
+Loyalty programme for high-margin items: stamp card for Coffee and Tea drives frequency. A 10% increase in Coffee/Tea transactions adds ~£1,200 revenue at 70% margin.
+Seasonal salad premium: Salad is already #1 revenue item — a seasonal premium version at £7–8 (vs standard £5) could lift average salad ticket by 25%, adding £4,100 pa.
+Cookie bundle at checkout: Cookie is the lowest-revenue item but has 60% margin. A 'add a cookie for £1' prompt at checkout could increase attach rate significantly.
+8.3 Long Term (3–6 Months)
+Dynamic pricing pilot: raise Smoothie prices from £4 to £4.50 on peak weekend days. Demand elasticity is likely low for a treat item — potential £650 uplift with minimal volume loss.
+Takeaway app integration: formalise the Takeaway channel with online pre-ordering. This also solves the 39.6% location-missing data problem automatically.
+Review Cookie pricing: at £1/unit Cookie is very cheap. A 50p price increase to £1.50 (still cheap for a café) with only 10% volume elasticity adds £1,600 annual revenue.
+9. Non-Functional Requirements
+Requirement
+Specification
+Performance
+Dashboard loads in < 2s; API responds in < 500ms for 95th percentile
+Scalability
+Supports up to 500,000 transactions without architectural changes
+Availability
+99.5% uptime SLA; read-only mode during maintenance windows
+Security
+Role-based access: Admin, Manager, Analyst; HTTPS only; no PII stored
+Browser support
+Chrome 110+, Firefox 115+, Safari 16+, Edge 110+
+Mobile
+Responsive design, usable on tablet (1024px+); mobile KPI cards only
+Data retention
+Transaction data retained for 36 months; ML model versions retained for 12 months
+Export
+CSV and PDF export for all charts and tables
+10. Risks & Mitigations
+Risk
+Likelihood
+Impact
+Mitigation
+POS data quality does not improve
+Medium
+High
+Automated validation rules at POS entry; daily data quality alerts to manager
+Model overfits to 2023 patterns
+Low
+Medium
+Monthly retraining; holdout test set from different time period
+Low dashboard adoption
+Medium
+High
+Embed dashboard in existing tools; weekly auto-emailed summary for managers
+Seasonal data gaps (460 missing dates)
+Low
+Low
+Date imputation using median month; flag records as imputed
+Price changes break model assumptions
+Low
+Medium
+Re-encode price tiers; monitor feature drift post price change
+11. Delivery Roadmap
+Phase
+Duration
+Deliverables
+Phase 1: Foundation
+Weeks 1–2
+Data pipeline, DB schema, FastAPI backend, RF model training & serialisation
+Phase 2: Dashboard MVP
+Weeks 3–4
+React dashboard: Revenue, Profitability, Data Quality views; auth
+Phase 3: ML Features
+Weeks 5–6
+Forecasting view, What-If simulator, anomaly feed, recommendation engine
+Phase 4: Hardening
+Week 7
+Performance testing, security audit, mobile optimisation, export features
+Phase 5: Launch
+Week 8
+Staff training, monitoring setup, documentation, production deployment
+12. Appendix — Dataset Summary
+Field
+Type
+Valid Records
+Missing/Error
+Notes
+transaction_id
+String
+10,000 (100%)
+0
+Unique per row
+item
+Categorical
+9,031 (90.3%)
+969 (9.7%)
+10 categories incl. UNKNOWN, ERROR
+quantity
+Float
+10,000 (100%)
+0
+Range 1–5 units
+price_per_unit
+Float
+10,000 (100%)
+0
+£1.00–£5.00; some imputed at £2.949...
+total_spent
+Float
+10,000 (100%)
+0
+Deterministic: qty × price
+payment_method
+Categorical
+6,822 (68.2%)
+3,178 (31.8%)
+Cash / Credit Card / Digital Wallet
+location
+Categorical
+6,039 (60.4%)
+3,961 (39.6%)
+In-store / Takeaway
+transaction_date
+Date
+9,540 (95.4%)
+460 (4.6%)
+Jan 2023 – Dec 2023
+Document prepared by: Café Analytics Team
+Last updated: April 2026 | Classification: Confidential
