@@ -181,7 +181,7 @@ def chat_with_data(chat: ChatMessage):
     # AI-powered response if API key is provided
     if GEMINI_API_KEY:
         try:
-            model = genai.GenerativeModel('gemini-pro')
+            model = genai.GenerativeModel('gemini-flash-latest')
             
             # Prepare data context
             total_rev = df['total_spent'].sum() if not df.empty else 0
