@@ -1,0 +1,10 @@
+node_modules/
+frontend/node_modules/
+backend/env/
+backend/venv/
+backend/.venv/
+.git/
+__pycache__/
+*.pyc
+.env
+cafe_sales_data_analyser.zip
